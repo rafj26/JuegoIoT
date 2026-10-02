@@ -1,5 +1,5 @@
-from juego import JuegoSeguridadIoT
-from vista import Vista
+from modelos.juego import JuegoSeguridadIoT
+from vistas.vista import Vista
 
 
 # Controlador que coordina logica y presentacion

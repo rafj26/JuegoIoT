@@ -1,4 +1,4 @@
-from controlador import Controlador
+from controladores.controlador import Controlador
 
 # Punto de entrada principal
 def main():

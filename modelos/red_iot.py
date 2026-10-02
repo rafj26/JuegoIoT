@@ -1,12 +1,11 @@
-import random
-from sensor_movimiento import SensorMovimiento
-from sensor_temperatura import SensorTemperatura
-from sensor_energia import SensorEnergia
-from sensor_rfid import SensorRFID
-from sensor_ruido import SensorRuido
-from camara import Camara
-from router import Router
-from cerradura import Cerradura
+from modelos.dispositivos.sensor_movimiento import SensorMovimiento
+from modelos.dispositivos.sensor_temperatura import SensorTemperatura
+from modelos.dispositivos.sensor_energia import SensorEnergia
+from modelos.dispositivos.sensor_rfid import SensorRFID
+from modelos.dispositivos.sensor_ruido import SensorRuido
+from modelos.dispositivos.camara import Camara
+from modelos.dispositivos.router import Router
+from modelos.dispositivos.cerradura import Cerradura
 
 
 # Clase para gestionar la red de dispositivos

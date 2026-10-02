@@ -1,6 +1,8 @@
 import random
 from abc import ABC, abstractmethod
 
+from modelos.alerta import Alerta
+
 
 # Clase abstracta base para todos los dispositivos
 class DispositivoBase(ABC):
@@ -39,8 +41,6 @@ class DispositivoBase(ABC):
 
     def generar_alerta(self, hora_actual):
         # Genera alerta del dispositivo
-        from alerta import Alerta
-
         probabilidad = self.calcular_probabilidad_real(hora_actual)
         es_real = random.random() < probabilidad
 

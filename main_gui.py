@@ -1,4 +1,4 @@
-from controlador_gui import ControladorGUI
+from controladores.controlador_gui import ControladorGUI
 
 # Punto de entrada con interfaz grafica
 def main():

@@ -1,4 +1,4 @@
-from dispositivo_base import DispositivoBase
+from modelos.dispositivos.dispositivo_base import DispositivoBase
 
 
 class Cerradura(DispositivoBase):

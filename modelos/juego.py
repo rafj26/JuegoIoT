@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from red_iot import RedIoT
+from modelos.red_iot import RedIoT
 
 
 # Clase principal del juego - solo logica de negocio

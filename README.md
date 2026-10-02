@@ -93,45 +93,59 @@ Derrota: Finalizar con menos de 15 puntos
 
 ## Estructura del Proyecto
 
-Archivos Principales:
+El codigo sigue el patron MVC, con cada capa en su propio paquete:
 
-main.py - Punto de entrada para la version terminal
+```
+JuegoIoT/
+├── modelos/                    # Modelo: logica de negocio
+│   ├── __init__.py
+│   ├── juego.py                # Rondas, puntuacion y resultado final
+│   ├── red_iot.py              # Red con los 8 dispositivos
+│   ├── alerta.py               # Alerta individual
+│   └── dispositivos/
+│       ├── __init__.py
+│       ├── dispositivo_base.py # Clase abstracta base
+│       ├── sensor_movimiento.py
+│       ├── sensor_temperatura.py
+│       ├── sensor_energia.py
+│       ├── sensor_rfid.py
+│       ├── sensor_ruido.py
+│       ├── camara.py
+│       ├── router.py
+│       └── cerradura.py
+├── vistas/                     # Vista: presentacion
+│   ├── __init__.py
+│   ├── vista.py                # Terminal
+│   └── vista_gui.py            # Tkinter
+├── controladores/              # Controlador: coordinacion
+│   ├── __init__.py
+│   ├── controlador.py          # Terminal
+│   └── controlador_gui.py      # Tkinter
+├── main.py                     # Entrada version terminal
+├── main_gui.py                 # Entrada version grafica
+└── README.md
+```
 
-main_gui.py - Punto de entrada para la version grafica
+Los imports son absolutos desde la raiz del proyecto (por ejemplo
+`from modelos.juego import JuegoSeguridadIoT`), por lo que los programas se
+ejecutan desde la carpeta raiz.
 
-juego.py - Logica principal del juego, manejo de rondas y puntuacion
+## Flujo de Ramas
 
-red_iot.py - Gestor de la red que almacena todos los dispositivos
+- `main`: codigo estable (produccion).
+- `develop`: area de pruebas. Todo cambio se integra primero aqui.
+- Ramas de trabajo (`feature/...`, `fix/...`): se crean desde `develop` y se
+  fusionan de vuelta en `develop` mediante Pull Request.
 
-alerta.py - Clase que representa una alerta individual
+Cuando `develop` esta probado, se fusiona en `main`.
 
-controlador.py - Coordinador para la version terminal (patron MVC)
-
-controlador_gui.py - Coordinador para la version grafica (patron MVC)
-
-vista.py - Presentacion terminal
-
-vista_gui.py - Presentacion grafica con Tkinter
-
-Dispositivos IoT:
-
-dispositivo_base.py - Clase abstracta base que define la interfaz comun
-
-sensor_movimiento.py - Sensor de movimiento con logica especializada
-
-sensor_temperatura.py - Sensor de temperatura
-
-sensor_energia.py - Sensor de consumo energetico
-
-sensor_rfid.py - Sensor de control de acceso RFID
-
-sensor_ruido.py - Sensor de niveles de ruido
-
-camara.py - Camara de vigilancia
-
-router.py - Router de red
-
-cerradura.py - Cerradura inteligente
+```bash
+git checkout develop
+git pull
+git checkout -b feature/mi-cambio
+# ... cambios ...
+git push -u origin feature/mi-cambio   # abrir PR hacia develop
+```
 
 ## Conceptos Implementados
 
@@ -155,11 +169,11 @@ Metodos abstractos que fuerzan implementacion en clases hijas
 
 Patron de Diseno MVC
 
-Modelo: Contiene la logica de negocio (juego.py, red_iot.py)
+Modelo: Contiene la logica de negocio (paquete modelos/)
 
-Vista: Responsable de presentacion (vista.py, vista_gui.py)
+Vista: Responsable de presentacion (paquete vistas/)
 
-Controlador: Coordina modelo y vista (controlador.py, controlador_gui.py)
+Controlador: Coordina modelo y vista (paquete controladores/)
 
 Beneficio: La logica del juego se reutiliza en dos interfaces diferentes
 

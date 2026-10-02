@@ -1,6 +1,6 @@
 import tkinter as tk
-from juego import JuegoSeguridadIoT
-from vista_gui import VistaGUI
+from modelos.juego import JuegoSeguridadIoT
+from vistas.vista_gui import VistaGUI
 
 
 # Controlador para interfaz grafica

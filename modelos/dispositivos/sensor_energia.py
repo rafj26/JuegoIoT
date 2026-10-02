@@ -1,21 +1,21 @@
-from dispositivo_base import DispositivoBase
+from modelos.dispositivos.dispositivo_base import DispositivoBase
 
 
-class SensorRFID(DispositivoBase):
+class SensorEnergia(DispositivoBase):
     def get_nombre_tipo(self):
-        return "Sensor RFID"
+        return "Sensor de Energia"
 
     def get_mensaje_alerta_real(self):
-        return "Acceso no autorizado detectado"
+        return "Consumo anomalo de energia"
 
     def get_mensaje_alerta_falsa(self):
-        return "Tarjeta escaneada"
+        return "Variacion en consumo"
 
     def calcular_probabilidad_real(self, hora_actual):
         probabilidad = super().calcular_probabilidad_real(hora_actual)
 
         # Fuera de horario laboral aumenta probabilidad
-        if hora_actual.hour < 7 or hora_actual.hour > 19:
-            probabilidad += 0.2
+        if hora_actual.hour < 6 or hora_actual.hour > 20:
+            probabilidad += 0.15
 
         return max(0.1, min(0.9, probabilidad))
