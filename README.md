@@ -114,6 +114,19 @@ Atajos de teclado:
 | `F11` / `Esc` | Activar / salir de pantalla completa |
 | `Ctrl+Q` | Salir |
 
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest                        # Ejecutar todos los tests
+pytest --cov=modelos tests/   # Con reporte de cobertura
+xvfb-run -a pytest tests/test_gui.py   # Tests de la GUI en Linux sin pantalla
+```
+
+Los tests estan en `tests/`: `test_juego.py`, `test_red_iot.py`,
+`test_dispositivos.py`, `test_integracion.py`, `test_persistencia.py`,
+`test_utilidades.py` y `test_gui.py` (se omite si no hay Tkinter o pantalla).
+
 ## Como Jugar
 
 El juego presenta 5 rondas en las que se generan alertas automaticamente en la red.
