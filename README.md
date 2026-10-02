@@ -82,6 +82,38 @@ Ambas versiones registran la partida en `logs/juego.log` (inicio de ronda,
 decisiones del jugador, calculo de puntos y errores). La carpeta se crea sola
 y esta excluida de git. La configuracion esta en `utilidades/registro.py`.
 
+## Interfaz Grafica
+
+| Bienvenida | Alertas |
+|---|---|
+| ![Bienvenida](docs/capturas/01_bienvenida.png) | ![Alertas](docs/capturas/02_alertas.png) |
+| **Resultados** | **Final (tema claro)** |
+| ![Resultados](docs/capturas/03_resultados.png) | ![Final](docs/capturas/05_final.png) |
+
+- Tarjetas de alerta con icono por tipo de dispositivo; clic para marcar.
+- Barra de progreso de rondas y grafica de puntuacion por ronda.
+- Indicador de estado (informacion, cargando, exito, error) en la parte inferior.
+- Confirmacion opcional antes de decidir, pausa/reanudar y animaciones
+  (se pueden desactivar).
+- Tema oscuro y claro con contraste alto, ventana redimensionable, scroll con
+  rueda del raton y pantalla completa.
+- Las preferencias (tema, pantalla completa, confirmacion, animaciones,
+  nombre del jugador y tamano de ventana) se guardan en
+  `datos/preferencias_gui.json`.
+- Las partidas de la GUI tambien se guardan en el historial SQLite.
+
+Atajos de teclado:
+
+| Tecla | Accion |
+|---|---|
+| `1`-`9` | Marcar / desmarcar alerta |
+| Flechas + `Espacio` | Mover el cursor y marcar |
+| `Enter` | Comenzar / confirmar / continuar |
+| `P` | Pausar / reanudar |
+| `T` | Cambiar tema |
+| `F11` / `Esc` | Activar / salir de pantalla completa |
+| `Ctrl+Q` | Salir |
+
 ## Como Jugar
 
 El juego presenta 5 rondas en las que se generan alertas automaticamente en la red.
