@@ -1,5 +1,9 @@
+import logging
 from datetime import datetime, timedelta
+
 from modelos.red_iot import RedIoT
+
+logger = logging.getLogger(__name__)
 
 
 # Clase principal del juego - solo logica de negocio
@@ -18,6 +22,7 @@ class JuegoSeguridadIoT:
         self.red = RedIoT()
         self.hora_inicio = datetime.now().replace(hour=8, minute=0, second=0)
         self.alertas_actuales = []
+        logger.info("Nueva partida creada con %d puntos", self.puntos)
 
     def get_info_inicial(self):
         # Retorna informacion inicial del juego
@@ -53,6 +58,10 @@ class JuegoSeguridadIoT:
         # Inicia una nueva ronda y genera alertas
         hora_ronda = self._calcular_hora_ronda()
         self.alertas_actuales = self.red.generar_alertas_turno(hora_ronda)
+        reales = sum(1 for alerta in self.alertas_actuales if alerta.es_real)
+        logger.info("Ronda %d iniciada a las %s: %d alertas (%d reales)",
+                    self.ronda_actual, hora_ronda.strftime("%H:%M"),
+                    len(self.alertas_actuales), reales)
         return hora_ronda
 
     def _calcular_hora_ronda(self):
@@ -70,11 +79,16 @@ class JuegoSeguridadIoT:
         if not numeros:
             return True
         total = len(self.alertas_actuales)
-        return all(1 <= num <= total for num in numeros)
+        valida = all(1 <= num <= total for num in numeros)
+        if not valida:
+            logger.warning("Seleccion fuera de rango: %s (total %d)", numeros, total)
+        return valida
 
     def procesar_decisiones(self, seleccion):
         # Procesa las decisiones y retorna resultados
         resultados = []
+        logger.info("Ronda %d - alertas atendidas: %s",
+                    self.ronda_actual, sorted(seleccion) or "ninguna")
 
         for i, alerta in enumerate(self.alertas_actuales, 1):
             atendida = i in seleccion
@@ -89,7 +103,12 @@ class JuegoSeguridadIoT:
                 'descripcion': self._get_descripcion_resultado(alerta, atendida)
             }
             resultados.append(resultado)
+            logger.debug("Alerta %d (%s): atendida=%s real=%s cambio=%+d",
+                         i, alerta.dispositivo.id, atendida, alerta.es_real, cambio)
 
+        cambio_ronda = sum(r['cambio_puntos'] for r in resultados)
+        logger.info("Ronda %d - cambio de puntos: %+d, total: %d",
+                    self.ronda_actual, cambio_ronda, self.puntos)
         return resultados
 
     def _calcular_cambio_puntos(self, alerta, atendida):
@@ -121,6 +140,8 @@ class JuegoSeguridadIoT:
     def get_resultado_final(self):
         # Retorna resultado final del juego
         victoria = self.puntos >= self.PUNTOS_VICTORIA
+        logger.info("Partida terminada: %d puntos, %s",
+                    self.puntos, "victoria" if victoria else "derrota")
         return {
             'puntos_finales': self.puntos,
             'victoria': victoria,

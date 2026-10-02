@@ -44,3 +44,6 @@ htmlcov/
 # Proyecto
 *.log
 *.pid
+# Datos generados en ejecucion
+logs/
+datos/

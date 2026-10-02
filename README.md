@@ -63,6 +63,12 @@ Version con Interfaz Grafica (Tkinter):
 python3 main_gui.py
 ```
 
+## Logs
+
+Ambas versiones registran la partida en `logs/juego.log` (inicio de ronda,
+decisiones del jugador, calculo de puntos y errores). La carpeta se crea sola
+y esta excluida de git. La configuracion esta en `utilidades/registro.py`.
+
 ## Como Jugar
 
 El juego presenta 5 rondas en las que se generan alertas automaticamente en la red.

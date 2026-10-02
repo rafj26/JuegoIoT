@@ -1,5 +1,9 @@
+import logging
+
 from modelos.juego import JuegoSeguridadIoT
 from vistas.vista import Vista
+
+logger = logging.getLogger(__name__)
 
 
 # Controlador que coordina logica y presentacion
@@ -53,6 +57,7 @@ class Controlador:
                     self.vista.mostrar_error(f"Use numeros entre 1 y {total}")
 
             except ValueError:
+                logger.warning("Entrada con formato invalido: %r", entrada)
                 self.vista.mostrar_error("Formato invalido. Use numeros separados por comas")
 
     def _parsear_entrada(self, entrada):
