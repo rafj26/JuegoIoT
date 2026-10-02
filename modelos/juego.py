@@ -1,3 +1,4 @@
+"""Logica principal del juego: rondas, puntuacion y resultado."""
 import logging
 from datetime import datetime, timedelta
 
@@ -6,8 +7,20 @@ from modelos.red_iot import RedIoT
 logger = logging.getLogger(__name__)
 
 
-# Clase principal del juego - solo logica de negocio
 class JuegoSeguridadIoT:
+    """
+    Clase principal del juego - solo logica de negocio.
+
+    No imprime nada: devuelve diccionarios que las vistas presentan.
+
+    Attributes:
+        puntos (int): Puntuacion actual.
+        ronda_actual (int): Numero de la ronda en curso (desde 1).
+        red (RedIoT): Red de dispositivos que genera las alertas.
+        alertas_actuales (list[Alerta]): Alertas de la ronda en curso.
+        historial_rondas (list[dict]): Resumen de cada ronda jugada.
+    """
+
     PUNTOS_INICIALES = 15
     TOTAL_RONDAS = 5
     PUNTOS_VICTORIA = 15
@@ -17,6 +30,7 @@ class JuegoSeguridadIoT:
     PUNTOS_ALERTA_FALSA_NO_ATENDIDA = 0
 
     def __init__(self):
+        """Inicializa el estado."""
         self.puntos = self.PUNTOS_INICIALES
         self.ronda_actual = 1
         self.red = RedIoT()
@@ -27,7 +41,13 @@ class JuegoSeguridadIoT:
         logger.info("Nueva partida creada con %d puntos", self.puntos)
 
     def get_info_inicial(self):
-        # Retorna informacion inicial del juego
+        """
+        Retorna informacion inicial del juego.
+
+        Returns:
+            dict: ``puntos_iniciales``, ``total_rondas``, ``puntos_victoria``
+            y ``reglas`` (puntos por cada tipo de decision).
+        """
         return {
             'puntos_iniciales': self.PUNTOS_INICIALES,
             'total_rondas': self.TOTAL_RONDAS,
@@ -36,7 +56,7 @@ class JuegoSeguridadIoT:
         }
 
     def _get_reglas(self):
-        # Retorna las reglas del juego
+        """Retorna las reglas del juego."""
         return {
             'alerta_real_atendida': self.PUNTOS_ALERTA_REAL_ATENDIDA,
             'alerta_falsa_atendida': self.PUNTOS_ALERTA_FALSA_ATENDIDA,
@@ -45,11 +65,21 @@ class JuegoSeguridadIoT:
         }
 
     def tiene_rondas_pendientes(self):
-        # Verifica si quedan rondas por jugar
+        """
+        Verifica si quedan rondas por jugar.
+
+        Returns:
+            bool: ``True`` mientras no se hayan jugado todas las rondas.
+        """
         return self.ronda_actual <= self.TOTAL_RONDAS
 
     def get_info_ronda(self):
-        # Retorna informacion de la ronda actual
+        """
+        Retorna informacion de la ronda actual.
+
+        Returns:
+            dict: ``numero``, ``total`` y ``puntos``.
+        """
         return {
             'numero': self.ronda_actual,
             'total': self.TOTAL_RONDAS,
@@ -57,7 +87,12 @@ class JuegoSeguridadIoT:
         }
 
     def iniciar_ronda(self):
-        # Inicia una nueva ronda y genera alertas
+        """
+        Inicia una nueva ronda y genera alertas.
+
+        Returns:
+            datetime: Hora simulada de la ronda.
+        """
         hora_ronda = self._calcular_hora_ronda()
         self.hora_ronda_actual = hora_ronda
         self.alertas_actuales = self.red.generar_alertas_turno(hora_ronda)
@@ -68,17 +103,30 @@ class JuegoSeguridadIoT:
         return hora_ronda
 
     def _calcular_hora_ronda(self):
-        # Calcula la hora de la ronda actual
+        """Calcula la hora de la ronda actual."""
         horas_transcurridas = (self.ronda_actual - 1) * 3
         return self.hora_inicio + timedelta(hours=horas_transcurridas)
 
     def get_alertas_formateadas(self):
-        # Retorna lista de alertas formateadas
+        """
+        Retorna lista de alertas formateadas.
+
+        Returns:
+            list[dict]: Informacion visible de cada alerta, numerada desde 1.
+        """
         return [alerta.get_info_formateada(i)
                 for i, alerta in enumerate(self.alertas_actuales, 1)]
 
     def validar_seleccion(self, numeros):
-        # Valida que los numeros esten en rango
+        """
+        Valida que los numeros esten en rango.
+
+        Args:
+            numeros (list[int]): Indices de alertas elegidas (desde 1).
+
+        Returns:
+            bool: ``True`` si la lista esta vacia o todos los indices existen.
+        """
         if not numeros:
             return True
         total = len(self.alertas_actuales)
@@ -88,7 +136,19 @@ class JuegoSeguridadIoT:
         return valida
 
     def procesar_decisiones(self, seleccion):
-        # Procesa las decisiones y retorna resultados
+        """
+        Procesa las decisiones y retorna resultados.
+
+        Actualiza los puntos y agrega la ronda a ``historial_rondas``.
+
+        Args:
+            seleccion (list[int]): Indices de las alertas atendidas; las
+                demas se consideran ignoradas.
+
+        Returns:
+            list[dict]: Por alerta: ``indice``, ``atendida``, ``es_real``,
+            ``cambio_puntos`` y ``descripcion``.
+        """
         resultados = []
         logger.info("Ronda %d - alertas atendidas: %s",
                     self.ronda_actual, sorted(seleccion) or "ninguna")
@@ -116,7 +176,7 @@ class JuegoSeguridadIoT:
         return resultados
 
     def _registrar_ronda(self, resultados, cambio_ronda):
-        # Guarda el resumen de la ronda para el historial de la partida
+        """Guarda el resumen de la ronda para el historial de la partida."""
         alertas = []
         for alerta, resultado in zip(self.alertas_actuales, resultados):
             info = alerta.get_info_formateada(resultado['indice'])
@@ -137,7 +197,16 @@ class JuegoSeguridadIoT:
         })
 
     def _calcular_cambio_puntos(self, alerta, atendida):
-        # Calcula cambio de puntos segun reglas
+        """
+        Calcula cambio de puntos segun reglas.
+
+        Args:
+            alerta (Alerta): Alerta a evaluar.
+            atendida (bool): Si fue atendida.
+
+        Returns:
+            int: Cambio de puntos (-2, -1, 0, +2).
+        """
         if atendida and alerta.es_real:
             return self.PUNTOS_ALERTA_REAL_ATENDIDA
         elif atendida and not alerta.es_real:
@@ -148,7 +217,7 @@ class JuegoSeguridadIoT:
             return self.PUNTOS_ALERTA_FALSA_NO_ATENDIDA
 
     def _get_descripcion_resultado(self, alerta, atendida):
-        # Retorna descripcion del resultado
+        """Retorna descripcion del resultado."""
         if atendida and alerta.es_real:
             return "Correcto - Alerta real atendida"
         elif atendida and not alerta.es_real:
@@ -159,11 +228,16 @@ class JuegoSeguridadIoT:
             return "Correcto - Falsa alarma ignorada"
 
     def avanzar_ronda(self):
-        # Avanza a la siguiente ronda
+        """Avanza a la siguiente ronda."""
         self.ronda_actual += 1
 
     def get_resultado_final(self):
-        # Retorna resultado final del juego
+        """
+        Retorna resultado final del juego.
+
+        Returns:
+            dict: ``puntos_finales``, ``victoria`` y ``mensaje``.
+        """
         victoria = self.puntos >= self.PUNTOS_VICTORIA
         logger.info("Partida terminada: %d puntos, %s",
                     self.puntos, "victoria" if victoria else "derrota")
@@ -174,7 +248,7 @@ class JuegoSeguridadIoT:
         }
 
     def _get_mensaje_final(self, victoria):
-        # Retorna mensaje final segun resultado
+        """Retorna mensaje final segun resultado."""
         if victoria:
             return "Has mantenido la seguridad de la red"
         else:

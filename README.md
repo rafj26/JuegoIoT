@@ -127,6 +127,21 @@ Los tests estan en `tests/`: `test_juego.py`, `test_red_iot.py`,
 `test_dispositivos.py`, `test_integracion.py`, `test_persistencia.py`,
 `test_utilidades.py` y `test_gui.py` (se omite si no hay Tkinter o pantalla).
 
+## Documentacion
+
+La documentacion de la API se genera con Sphinx (tema Read the Docs) a partir
+de los docstrings (formato Google) de todas las clases y metodos.
+
+```bash
+pip install -r requirements-docs.txt
+cd docs
+make html          # Abrir docs/_build/html/index.html
+```
+
+Al hacer push a `main`, el workflow `.github/workflows/docs.yml` la publica en
+GitHub Pages (requiere activar en *Settings > Pages* la fuente
+"GitHub Actions").
+
 ## Como Jugar
 
 El juego presenta 5 rondas en las que se generan alertas automaticamente en la red.

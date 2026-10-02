@@ -1,3 +1,4 @@
+"""Punto de entrada de la version de terminal."""
 import argparse
 import logging
 
@@ -8,7 +9,7 @@ from vistas.vista import Vista
 
 
 def crear_parser():
-    # Define las opciones de linea de comandos
+    """Define las opciones de linea de comandos."""
     parser = argparse.ArgumentParser(description="Sistema de Seguridad IoT (terminal)")
     parser.add_argument("--jugador", default="Jugador", help="Nombre del jugador")
     parser.add_argument("--bd", default=RUTA_BD_POR_DEFECTO, help="Ruta de la base de datos SQLite")
@@ -19,8 +20,13 @@ def crear_parser():
     return parser
 
 
-# Punto de entrada principal
 def main(argv=None):
+    """
+    Ejecuta el juego o muestra el historial segun los argumentos.
+
+    Args:
+        argv (list[str], optional): Argumentos; por defecto ``sys.argv``.
+    """
     args = crear_parser().parse_args(argv)
     configurar_logging()
 

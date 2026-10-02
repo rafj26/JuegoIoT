@@ -1,8 +1,12 @@
-# Clase para manejar toda la presentacion
+"""Vista de terminal del juego."""
+
+
 class Vista:
+    """Clase para manejar toda la presentacion."""
+
     @staticmethod
     def mostrar_bienvenida(info_inicial):
-        # Muestra pantalla inicial
+        """Muestra pantalla inicial."""
         print("=" * 60)
         print("SISTEMA DE SEGURIDAD IoT - ADMINISTRADOR DE REDES")
         print("=" * 60)
@@ -19,7 +23,7 @@ class Vista:
 
     @staticmethod
     def mostrar_encabezado_ronda(info_ronda):
-        # Muestra informacion de ronda
+        """Muestra informacion de ronda."""
         print(f"\n{'=' * 60}")
         print(f"RONDA {info_ronda['numero']}/{info_ronda['total']}")
         print(f"Puntos actuales: {info_ronda['puntos']}")
@@ -27,7 +31,7 @@ class Vista:
 
     @staticmethod
     def mostrar_alertas(alertas, hora):
-        # Muestra todas las alertas
+        """Muestra todas las alertas."""
         print(f"\nAlertas detectadas a las {hora.strftime('%H:%M')}:")
         print("-" * 60)
 
@@ -37,7 +41,7 @@ class Vista:
 
     @staticmethod
     def _mostrar_alerta_individual(info):
-        # Muestra una alerta individual
+        """Muestra una alerta individual."""
         print(f"[{info['indice']}] {info['hora']} | {info['tipo']}")
         print(f"    Ubicacion: {info['ubicacion']}")
         print(f"    Alerta: {info['mensaje']}")
@@ -45,19 +49,19 @@ class Vista:
 
     @staticmethod
     def solicitar_decision():
-        # Solicita decision al usuario
+        """Solicita decision al usuario."""
         print("\nIngrese numeros de alertas a atender (separados por comas)")
         print("O ingrese 0 para no atender ninguna:")
         return input("> ").strip()
 
     @staticmethod
     def mostrar_error(mensaje):
-        # Muestra mensaje de error
+        """Muestra mensaje de error."""
         print(f"Error: {mensaje}")
 
     @staticmethod
     def mostrar_resultados_ronda(resultados, puntos_totales):
-        # Muestra resultados de la ronda
+        """Muestra resultados de la ronda."""
         print("\n" + "=" * 60)
         print("RESULTADO DE LA RONDA:")
         print("=" * 60)
@@ -70,7 +74,7 @@ class Vista:
 
     @staticmethod
     def _mostrar_resultado_individual(resultado):
-        # Muestra resultado individual
+        """Muestra resultado individual."""
         accion = "ATENDIDA" if resultado['atendida'] else "IGNORADA"
         tipo = "REAL" if resultado['es_real'] else "FALSA"
         cambio = resultado['cambio_puntos']
@@ -81,7 +85,7 @@ class Vista:
 
     @staticmethod
     def mostrar_resultado_final(resultado):
-        # Muestra pantalla final
+        """Muestra pantalla final."""
         print("\n" + "=" * 60)
         print("FIN DEL JUEGO")
         print("=" * 60)
@@ -97,12 +101,12 @@ class Vista:
 
     @staticmethod
     def mostrar_mensaje(mensaje):
-        # Muestra un mensaje informativo
+        """Muestra un mensaje informativo."""
         print(mensaje)
 
     @staticmethod
     def mostrar_historial(partidas):
-        # Muestra la lista de partidas guardadas
+        """Muestra la lista de partidas guardadas."""
         print("=" * 60)
         print("HISTORIAL DE PARTIDAS")
         print("=" * 60)
@@ -118,7 +122,7 @@ class Vista:
 
     @staticmethod
     def mostrar_estadisticas(estadisticas):
-        # Muestra las estadisticas por jugador
+        """Muestra las estadisticas por jugador."""
         print("=" * 60)
         print("ESTADISTICAS")
         print("=" * 60)

@@ -47,3 +47,4 @@ htmlcov/
 # Datos generados en ejecucion
 logs/
 datos/
+docs/_build/

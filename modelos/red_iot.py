@@ -1,3 +1,4 @@
+"""Red de dispositivos IoT del juego."""
 from modelos.dispositivos.sensor_movimiento import SensorMovimiento
 from modelos.dispositivos.sensor_temperatura import SensorTemperatura
 from modelos.dispositivos.sensor_energia import SensorEnergia
@@ -8,9 +9,20 @@ from modelos.dispositivos.router import Router
 from modelos.dispositivos.cerradura import Cerradura
 
 
-# Clase para gestionar la red de dispositivos
 class RedIoT:
+    """
+    Clase para gestionar la red de dispositivos.
+
+    Crea un dispositivo de cada tipo (8 en total), cada uno en una ubicacion
+    distinta.
+
+    Attributes:
+        dispositivos (list[DispositivoBase]): Dispositivos de la red.
+        ubicaciones (list[str]): Ubicaciones disponibles, en orden.
+    """
+
     def __init__(self):
+        """Inicializa el estado."""
         self.dispositivos = []
         self.ubicaciones = [
             "Entrada Principal",
@@ -25,6 +37,7 @@ class RedIoT:
         self._inicializar_dispositivos()
 
     def _inicializar_dispositivos(self):
+        """Crea un dispositivo de cada tipo con su id y ubicacion."""
         # Lista de clases de dispositivos
         clases_dispositivos = [
             SensorMovimiento,
@@ -45,6 +58,14 @@ class RedIoT:
             self.dispositivos.append(dispositivo)
 
     def generar_alertas_turno(self, hora_actual):
-        # Genera alertas de todos los dispositivos
+        """
+        Genera alertas de todos los dispositivos.
+
+        Args:
+            hora_actual (datetime): Momento de la ronda.
+
+        Returns:
+            list[Alerta]: Una alerta por dispositivo, en el mismo orden.
+        """
         return [dispositivo.generar_alerta(hora_actual)
                 for dispositivo in self.dispositivos]

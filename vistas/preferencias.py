@@ -26,6 +26,7 @@ class Preferencias:
     """
 
     def __init__(self, ruta=RUTA_PREFERENCIAS):
+        """Carga las preferencias desde ``ruta``."""
         self.ruta = ruta
         self.valores = dict(VALORES_POR_DEFECTO)
         self.cargar()
@@ -58,7 +59,9 @@ class Preferencias:
             logger.exception("No se pudieron guardar las preferencias")
 
     def __getitem__(self, clave):
+        """Devuelve el valor de una preferencia."""
         return self.valores[clave]
 
     def __setitem__(self, clave, valor):
+        """Cambia el valor de una preferencia (sin guardar)."""
         self.valores[clave] = valor

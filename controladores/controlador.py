@@ -1,3 +1,4 @@
+"""Controlador de la version de terminal."""
 import logging
 
 from modelos.juego import JuegoSeguridadIoT
@@ -6,16 +7,24 @@ from vistas.vista import Vista
 logger = logging.getLogger(__name__)
 
 
-# Controlador que coordina logica y presentacion
 class Controlador:
+    """
+    Controlador que coordina logica y presentacion.
+
+    Args:
+        repositorio (RepositorioPartidas, optional): Donde guardar la partida.
+        jugador (str): Nombre con el que se guarda la partida.
+    """
+
     def __init__(self, repositorio=None, jugador="Jugador"):
+        """Crea el juego y la vista de terminal."""
         self.juego = JuegoSeguridadIoT()
         self.vista = Vista()
         self.repositorio = repositorio
         self.jugador = jugador
 
     def iniciar_juego(self):
-        # Inicia el ciclo completo del juego
+        """Inicia el ciclo completo del juego."""
         self._mostrar_pantalla_inicial()
 
         while self.juego.tiene_rondas_pendientes():
@@ -25,12 +34,12 @@ class Controlador:
         self._mostrar_pantalla_final()
 
     def _mostrar_pantalla_inicial(self):
-        # Muestra informacion inicial
+        """Muestra informacion inicial."""
         info = self.juego.get_info_inicial()
         self.vista.mostrar_bienvenida(info)
 
     def _ejecutar_ronda(self):
-        # Ejecuta una ronda completa
+        """Ejecuta una ronda completa."""
         info_ronda = self.juego.get_info_ronda()
         self.vista.mostrar_encabezado_ronda(info_ronda)
 
@@ -45,7 +54,7 @@ class Controlador:
         self.vista.mostrar_resultados_ronda(resultados, puntos)
 
     def _obtener_y_validar_decision(self):
-        # Obtiene y valida la decision del jugador
+        """Obtiene y valida la decision del jugador."""
         while True:
             entrada = self.vista.solicitar_decision()
 
@@ -63,19 +72,19 @@ class Controlador:
                 self.vista.mostrar_error("Formato invalido. Use numeros separados por comas")
 
     def _parsear_entrada(self, entrada):
-        # Convierte entrada en lista de numeros
+        """Convierte entrada en lista de numeros."""
         if entrada == "0":
             return []
         return [int(x.strip()) for x in entrada.split(",")]
 
     def _mostrar_pantalla_final(self):
-        # Muestra resultado final
+        """Muestra resultado final."""
         resultado = self.juego.get_resultado_final()
         self.vista.mostrar_resultado_final(resultado)
         self._guardar_partida()
 
     def _guardar_partida(self):
-        # Guarda la partida si hay repositorio configurado
+        """Guarda la partida si hay repositorio configurado."""
         if self.repositorio is None:
             return
         try:

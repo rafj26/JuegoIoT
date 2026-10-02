@@ -1,3 +1,4 @@
+"""Vista grafica del juego construida con Tkinter."""
 import tkinter as tk
 from tkinter import font as tkfont
 from tkinter import messagebox, ttk
@@ -62,9 +63,19 @@ FUENTES_PREFERIDAS = ("Segoe UI", "Inter", "Ubuntu", "Noto Sans",
 ESTADOS = ('info', 'cargando', 'exito', 'error')
 
 
-# Vista grafica usando Tkinter (dirigida por eventos)
 class VistaGUI:
+    """
+    Vista grafica usando Tkinter (dirigida por eventos).
+
+    La vista no contiene logica de juego: muestra los datos que recibe y
+    avisa al controlador mediante callbacks.
+
+    Args:
+        root (tk.Tk): Ventana principal.
+        preferencias (Preferencias, optional): Preferencias de usuario.
+    """
     def __init__(self, root, preferencias=None):
+        """Crea la ventana principal con las preferencias indicadas."""
         self.root = root
         self.prefs = preferencias or Preferencias()
         self.colores = TEMAS.get(self.prefs['tema'], TEMAS['oscuro'])
@@ -91,6 +102,7 @@ class VistaGUI:
     # Construccion de la ventana
     # ------------------------------------------------------------------
     def _configurar_ventana(self):
+        """Configura titulo, tamano y pantalla completa de la ventana."""
         self.root.title("Sistema de Seguridad IoT")
         self.root.geometry(self.prefs['geometria'])
         self.root.minsize(720, 560)
@@ -98,6 +110,7 @@ class VistaGUI:
         self.root.protocol("WM_DELETE_WINDOW", self.cerrar)
 
     def _crear_fuentes(self):
+        """Elige la primera familia tipografica disponible y crea las fuentes."""
         disponibles = set(tkfont.families(self.root))
         familia = next((f for f in FUENTES_PREFERIDAS if f in disponibles), "TkDefaultFont")
         self.fuentes = {
@@ -111,6 +124,7 @@ class VistaGUI:
         }
 
     def _crear_interfaz(self):
+        """Construye encabezado, barra de informacion, area central y pie."""
         c = self.colores
         self.root.configure(bg=c['fondo'])
         self.root.columnconfigure(0, weight=1)
@@ -199,6 +213,7 @@ class VistaGUI:
         self._crear_boton(self.frame_pausa, "Reanudar", self.alternar_pausa).pack(pady=24)
 
     def _crear_estilos(self):
+        """Aplica los colores del tema a los widgets ttk."""
         c = self.colores
         estilo = ttk.Style(self.root)
         estilo.theme_use("clam")
@@ -209,6 +224,7 @@ class VistaGUI:
                          bordercolor=c['fondo'], arrowcolor=c['texto'])
 
     def _crear_dato(self, padre, columna, titulo, valor, color):
+        """Crea un dato de la barra de informacion y devuelve su etiqueta de valor."""
         c = self.colores
         frame = tk.Frame(padre, bg=c['superficie'])
         frame.grid(row=0, column=columna, sticky="ew", padx=16, pady=(10, 6))
@@ -219,6 +235,7 @@ class VistaGUI:
         return label
 
     def _crear_boton(self, padre, texto, comando, secundario=False, color=None):
+        """Crea un boton plano con los colores del tema."""
         c = self.colores
         fondo = color or (c['superficie_alta'] if secundario else c['acento'])
         texto_color = c['texto'] if secundario else c['texto_acento']
@@ -230,6 +247,7 @@ class VistaGUI:
         return boton
 
     def _configurar_atajos(self):
+        """Asocia los atajos de teclado y la rueda del raton."""
         self.root.bind("<Return>", lambda e: self._tecla_enter())
         self.root.bind("<KP_Enter>", lambda e: self._tecla_enter())
         self.root.bind("<space>", lambda e: self._tecla_espacio())
@@ -251,22 +269,27 @@ class VistaGUI:
     # Scroll y redimensionado
     # ------------------------------------------------------------------
     def _actualizar_scroll(self, _evento=None):
+        """Ajusta la region desplazable al tamano del contenido."""
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
 
     def _ajustar_ancho_contenido(self, evento):
+        """Hace que el contenido y los textos se adapten al ancho disponible."""
         self.canvas.itemconfigure(self._ventana_contenido, width=evento.width)
         ancho_texto = max(200, evento.width - 140)
         for card in self.cards:
             card['mensaje'].configure(wraplength=ancho_texto)
 
     def _rueda_raton(self, evento):
+        """Desplaza el contenido con la rueda del raton (Windows/macOS)."""
         self._desplazar(-1 if evento.delta > 0 else 1)
 
     def _desplazar(self, pasos):
+        """Desplaza el contenido si no cabe completo en pantalla."""
         if self.canvas.yview() != (0.0, 1.0):
             self.canvas.yview_scroll(pasos, "units")
 
     def _limpiar_contenido(self):
+        """Elimina el contenido central y cancela sus animaciones."""
         self._cancelar_animaciones()
         for widget in self.frame_contenido.winfo_children():
             widget.destroy()
@@ -277,7 +300,7 @@ class VistaGUI:
     # Estado, animaciones y utilidades
     # ------------------------------------------------------------------
     def mostrar_estado(self, mensaje, tipo='info'):
-        # Indicador visual de estado: info, cargando, exito o error
+        """Indicador visual de estado: info, cargando, exito o error."""
         c = self.colores
         color = {'info': c['acento'], 'cargando': c['aviso'],
                  'exito': c['exito'], 'error': c['error']}.get(tipo, c['acento'])
@@ -287,12 +310,13 @@ class VistaGUI:
         self.estado_actual = (mensaje, tipo)
 
     def _programar(self, ms, funcion, grupo='contenido'):
-        # Programa una funcion; el grupo permite cancelar solo las del contenido
+        """Programa una funcion; el grupo permite cancelar solo las del contenido."""
         identificador = self.root.after(ms if self.prefs['animaciones'] else 0, funcion)
         self._animaciones[grupo].append(identificador)
         return identificador
 
     def _cancelar_animaciones(self, grupos=('contenido',)):
+        """Cancela las funciones programadas de los grupos indicados."""
         for grupo in grupos:
             for identificador in self._animaciones[grupo]:
                 try:
@@ -302,6 +326,7 @@ class VistaGUI:
             self._animaciones[grupo] = []
 
     def _animar_progreso(self, destino):
+        """Mueve la barra de progreso suavemente hasta el valor destino."""
         self._progreso_objetivo = destino
         actual = self.barra_progreso['value']
         if not self.prefs['animaciones'] or abs(destino - actual) < 1:
@@ -311,6 +336,7 @@ class VistaGUI:
         self._programar(16, lambda: self._animar_progreso(destino), 'cabecera')
 
     def _animar_puntos(self, destino):
+        """Cuenta los puntos de uno en uno hasta el valor destino."""
         self._puntos_objetivo = destino
         actual = self._puntos_mostrados
         if actual is None or not self.prefs['animaciones'] or actual == destino:
@@ -323,12 +349,14 @@ class VistaGUI:
         self._programar(60, lambda: self._animar_puntos(destino), 'cabecera')
 
     def _pintar_puntos(self, puntos):
+        """Muestra los puntos en verde si alcanzan la victoria, en rojo si no."""
         c = self.colores
         objetivo = getattr(self, 'puntos_victoria', 0)
         color = c['exito'] if puntos >= objetivo else c['error']
         self.label_puntos.configure(text=str(puntos), fg=color)
 
     def _configurar_pie(self, ayuda, texto_boton, accion):
+        """Configura el texto de ayuda y el boton principal (tambien Enter)."""
         self.label_ayuda.configure(text=ayuda)
         self._accion_enter = accion
         if texto_boton:
@@ -338,14 +366,14 @@ class VistaGUI:
             self.btn_principal.grid_remove()
 
     def _registrar_pantalla(self, funcion, *args):
-        # Recuerda la pantalla actual para poder redibujarla al cambiar el tema
+        """Recuerda la pantalla actual para poder redibujarla al cambiar el tema."""
         self._pantalla = (funcion, args)
 
     # ------------------------------------------------------------------
     # Pantallas
     # ------------------------------------------------------------------
     def mostrar_bienvenida(self, info_inicial, on_iniciar):
-        # Pantalla de bienvenida con reglas, nombre del jugador y opciones
+        """Pantalla de bienvenida con reglas, nombre del jugador y opciones."""
         self._registrar_pantalla(self.mostrar_bienvenida, info_inicial, on_iniciar)
         self._limpiar_contenido()
         c = self.colores
@@ -419,6 +447,7 @@ class VistaGUI:
         self.mostrar_estado("Listo para comenzar")
 
     def _crear_seccion_atajos(self):
+        """Muestra la tarjeta con los atajos de teclado."""
         c = self.colores
         tarjeta = tk.Frame(self.frame_contenido, bg=c['superficie'], highlightthickness=1,
                            highlightbackground=c['borde'])
@@ -437,7 +466,7 @@ class VistaGUI:
                      fg=c['texto_suave']).grid(row=i // 2, column=(i % 2) * 2 + 1, sticky="w", padx=(8, 32))
 
     def mostrar_transicion(self, numero_ronda, on_terminar):
-        # Animacion corta entre rondas
+        """Animacion corta entre rondas."""
         self._pantalla = None
         self._limpiar_contenido()
         self._en_transicion = True
@@ -471,14 +500,14 @@ class VistaGUI:
             terminar()
 
     def actualizar_info_ronda(self, info_ronda):
-        # Actualiza ronda, puntos y barra de progreso
+        """Actualiza ronda, puntos y barra de progreso."""
         self.total_rondas = info_ronda['total']
         self.label_ronda.configure(text=f"{info_ronda['numero']}/{info_ronda['total']}")
         self._animar_puntos(info_ronda['puntos'])
         self._animar_progreso(100 * (info_ronda['numero'] - 1) / info_ronda['total'])
 
     def mostrar_alertas(self, alertas, hora, on_confirmar):
-        # Muestra las alertas como tarjetas seleccionables
+        """Muestra las alertas como tarjetas seleccionables."""
         self._registrar_pantalla(self.mostrar_alertas, alertas, hora, on_confirmar)
         self._limpiar_contenido()
         self.alertas = alertas
@@ -496,6 +525,7 @@ class VistaGUI:
         self.mostrar_estado(f"{len(alertas)} alertas recibidas a las {hora.strftime('%H:%M')}")
 
     def _crear_card_alerta(self, alerta):
+        """Crea la tarjeta seleccionable de una alerta."""
         c = self.colores
         indice = alerta['indice']
         simbolo, color_icono = ICONOS_DISPOSITIVO.get(alerta['tipo'], ICONO_GENERICO)
@@ -540,7 +570,7 @@ class VistaGUI:
         self._pintar_seleccion()
 
     def alternar_alerta(self, indice):
-        # Marca o desmarca una alerta para atenderla
+        """Marca o desmarca una alerta para atenderla."""
         if self.pausado or self._on_confirmar is None:
             return
         if not any(card['indice'] == indice for card in self.cards):
@@ -551,6 +581,7 @@ class VistaGUI:
         self.mostrar_estado(f"{len(self.seleccion)} alerta(s) marcadas para atender")
 
     def _pintar_seleccion(self):
+        """Actualiza colores y etiquetas segun la seleccion y el cursor."""
         c = self.colores
         for posicion, card in enumerate(self.cards):
             seleccionada = card['indice'] in self.seleccion
@@ -564,6 +595,7 @@ class VistaGUI:
                                      fg=c['texto_acento'] if seleccionada else c['texto'])
 
     def _mover_cursor(self, delta):
+        """Mueve el cursor de teclado entre las alertas."""
         if self.pausado or not self.cards or self._on_confirmar is None:
             return
         self.cursor = (self.cursor + delta) % len(self.cards)
@@ -581,6 +613,7 @@ class VistaGUI:
             self.canvas.yview_moveto(max(0, abajo - (fin - inicio)))
 
     def _confirmar_decision(self):
+        """Pide confirmacion si corresponde y envia la seleccion al controlador."""
         if self.pausado or self._on_confirmar is None:
             return
         seleccion = sorted(self.seleccion)
@@ -598,7 +631,7 @@ class VistaGUI:
         callback(seleccion)
 
     def mostrar_resultados_ronda(self, resultados, puntos_totales, historial_puntos, on_continuar):
-        # Muestra el resultado de cada alerta y la grafica de puntos
+        """Muestra el resultado de cada alerta y la grafica de puntos."""
         self._registrar_pantalla(self.mostrar_resultados_ronda, resultados, puntos_totales,
                                  historial_puntos, on_continuar)
         self._limpiar_contenido()
@@ -627,6 +660,7 @@ class VistaGUI:
         self.mostrar_estado(f"Ronda evaluada: {cambio:+d} puntos", tipo)
 
     def _crear_card_resultado(self, resultado):
+        """Crea la tarjeta con el resultado de una alerta."""
         c = self.colores
         cambio = resultado['cambio_puntos']
         if cambio > 0:
@@ -650,7 +684,7 @@ class VistaGUI:
                  fg=c['texto']).pack(side=tk.RIGHT, padx=14, pady=8)
 
     def _crear_grafica(self, historial_puntos):
-        # Grafica de la puntuacion acumulada por ronda
+        """Grafica de la puntuacion acumulada por ronda."""
         c = self.colores
         tk.Label(self.frame_contenido, text="Puntuacion por ronda", font=self.fuentes['negrita'],
                  bg=c['fondo'], fg=c['texto']).pack(anchor="w", padx=4, pady=(16, 4))
@@ -660,6 +694,7 @@ class VistaGUI:
         grafica.bind("<Configure>", lambda e: self._dibujar_grafica(grafica, historial_puntos))
 
     def _dibujar_grafica(self, grafica, historial_puntos):
+        """Dibuja la linea de puntos por ronda y la linea de victoria."""
         c = self.colores
         grafica.delete("all")
         ancho = max(grafica.winfo_width(), 300)
@@ -700,7 +735,7 @@ class VistaGUI:
             grafica.create_text(px, py - 14, text=str(valor), fill=c['texto'], font=self.fuentes['pequena'])
 
     def mostrar_resultado_final(self, resultado, historial_puntos, on_reiniciar, mensaje_guardado=None):
-        # Pantalla final con victoria/derrota y grafica de toda la partida
+        """Pantalla final con victoria/derrota y grafica de toda la partida."""
         self._registrar_pantalla(self.mostrar_resultado_final, resultado, historial_puntos,
                                  on_reiniciar, mensaje_guardado)
         self._limpiar_contenido()
@@ -733,19 +768,23 @@ class VistaGUI:
     # Teclado y acciones globales
     # ------------------------------------------------------------------
     def _foco_en_entrada(self):
+        """Indica si el foco esta en un campo de texto."""
         return isinstance(self.root.focus_get(), tk.Entry)
 
     def _tecla_enter(self):
+        """Ejecuta la accion principal de la pantalla actual."""
         if self.pausado or self._accion_enter is None:
             return
         self._accion_enter()
 
     def _tecla_espacio(self):
+        """Marca o desmarca la alerta bajo el cursor."""
         if self._foco_en_entrada() or not self.cards or self._on_confirmar is None:
             return
         self.alternar_alerta(self.cards[self.cursor]['indice'])
 
     def _tecla_numero(self, evento):
+        """Marca o desmarca la alerta con el numero pulsado."""
         if self._foco_en_entrada():
             return
         caracter = evento.char
@@ -753,7 +792,7 @@ class VistaGUI:
             self.alternar_alerta(int(caracter))
 
     def alternar_pausa(self):
-        # Pausa o reanuda el juego
+        """Pausa o reanuda el juego."""
         if self._foco_en_entrada():
             return
         self.pausado = not self.pausado
@@ -771,7 +810,7 @@ class VistaGUI:
             self.mostrar_estado(*self._estado_previo)
 
     def alternar_tema(self):
-        # Cambia entre tema oscuro y claro y redibuja la pantalla actual
+        """Cambia entre tema oscuro y claro y redibuja la pantalla actual."""
         if self._foco_en_entrada() or self._en_transicion:
             return
         self._cancelar_animaciones(('contenido', 'cabecera'))
@@ -813,17 +852,18 @@ class VistaGUI:
             self.alternar_pausa()
 
     def alternar_pantalla_completa(self):
-        # Activa o desactiva la pantalla completa
+        """Activa o desactiva la pantalla completa."""
         self.prefs['pantalla_completa'] = not self.prefs['pantalla_completa']
         self.root.attributes("-fullscreen", self.prefs['pantalla_completa'])
         self.prefs.guardar()
 
     def _salir_pantalla_completa(self):
+        """Sale de pantalla completa si esta activa."""
         if self.prefs['pantalla_completa']:
             self.alternar_pantalla_completa()
 
     def cerrar(self):
-        # Guarda preferencias y cierra la ventana
+        """Guarda preferencias y cierra la ventana."""
         if not self.prefs['pantalla_completa']:
             self.prefs['geometria'] = self.root.geometry().split("+")[0]
         self.prefs.guardar()
@@ -832,5 +872,6 @@ class VistaGUI:
 
     @staticmethod
     def _a_rgb(color):
+        """Convierte un color ``#rrggbb`` en una tupla ``(r, g, b)``."""
         color = color.lstrip("#")
         return tuple(int(color[i:i + 2], 16) for i in (0, 2, 4))

@@ -49,6 +49,7 @@ class RepositorioPartidas:
     """
 
     def __init__(self, ruta=RUTA_BD_POR_DEFECTO):
+        """Abre la base de datos y crea las tablas si no existen."""
         self.ruta = ruta
         carpeta = os.path.dirname(ruta)
         if ruta != ":memory:" and carpeta:
@@ -63,9 +64,11 @@ class RepositorioPartidas:
         self._conexion.close()
 
     def __enter__(self):
+        """Permite usar el repositorio con ``with``."""
         return self
 
     def __exit__(self, *exc):
+        """Cierra la conexion al salir del bloque ``with``."""
         self.cerrar()
 
     def guardar_partida(self, juego, jugador="Jugador", fecha=None):
@@ -230,6 +233,7 @@ class RepositorioPartidas:
 
     @staticmethod
     def _fila_partida(fila):
+        """Convierte una fila de ``partidas`` en diccionario."""
         return {
             'id': fila['id'],
             'jugador': fila['jugador'],

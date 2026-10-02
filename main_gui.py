@@ -1,3 +1,4 @@
+"""Punto de entrada de la version grafica."""
 import logging
 
 from controladores.controlador_gui import ControladorGUI
@@ -5,8 +6,8 @@ from modelos.persistencia import RepositorioPartidas
 from utilidades.registro import configurar_logging
 
 
-# Punto de entrada con interfaz grafica
 def main():
+    """Configura el logging y abre la version grafica."""
     configurar_logging()
     try:
         with RepositorioPartidas() as repositorio:
