@@ -8,9 +8,11 @@ logger = logging.getLogger(__name__)
 
 # Controlador que coordina logica y presentacion
 class Controlador:
-    def __init__(self):
+    def __init__(self, repositorio=None, jugador="Jugador"):
         self.juego = JuegoSeguridadIoT()
         self.vista = Vista()
+        self.repositorio = repositorio
+        self.jugador = jugador
 
     def iniciar_juego(self):
         # Inicia el ciclo completo del juego
@@ -70,3 +72,15 @@ class Controlador:
         # Muestra resultado final
         resultado = self.juego.get_resultado_final()
         self.vista.mostrar_resultado_final(resultado)
+        self._guardar_partida()
+
+    def _guardar_partida(self):
+        # Guarda la partida si hay repositorio configurado
+        if self.repositorio is None:
+            return
+        try:
+            partida_id = self.repositorio.guardar_partida(self.juego, self.jugador)
+            self.vista.mostrar_mensaje(f"Partida #{partida_id} guardada para {self.jugador}")
+        except Exception:
+            logger.exception("No se pudo guardar la partida")
+            self.vista.mostrar_error("No se pudo guardar la partida")

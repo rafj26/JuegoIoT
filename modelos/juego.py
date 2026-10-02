@@ -22,6 +22,8 @@ class JuegoSeguridadIoT:
         self.red = RedIoT()
         self.hora_inicio = datetime.now().replace(hour=8, minute=0, second=0)
         self.alertas_actuales = []
+        self.hora_ronda_actual = None
+        self.historial_rondas = []
         logger.info("Nueva partida creada con %d puntos", self.puntos)
 
     def get_info_inicial(self):
@@ -57,6 +59,7 @@ class JuegoSeguridadIoT:
     def iniciar_ronda(self):
         # Inicia una nueva ronda y genera alertas
         hora_ronda = self._calcular_hora_ronda()
+        self.hora_ronda_actual = hora_ronda
         self.alertas_actuales = self.red.generar_alertas_turno(hora_ronda)
         reales = sum(1 for alerta in self.alertas_actuales if alerta.es_real)
         logger.info("Ronda %d iniciada a las %s: %d alertas (%d reales)",
@@ -109,7 +112,29 @@ class JuegoSeguridadIoT:
         cambio_ronda = sum(r['cambio_puntos'] for r in resultados)
         logger.info("Ronda %d - cambio de puntos: %+d, total: %d",
                     self.ronda_actual, cambio_ronda, self.puntos)
+        self._registrar_ronda(resultados, cambio_ronda)
         return resultados
+
+    def _registrar_ronda(self, resultados, cambio_ronda):
+        # Guarda el resumen de la ronda para el historial de la partida
+        alertas = []
+        for alerta, resultado in zip(self.alertas_actuales, resultados):
+            info = alerta.get_info_formateada(resultado['indice'])
+            info.update({
+                'es_real': alerta.es_real,
+                'atendida': resultado['atendida'],
+                'cambio_puntos': resultado['cambio_puntos'],
+            })
+            alertas.append(info)
+
+        hora = self.hora_ronda_actual.strftime("%H:%M") if self.hora_ronda_actual else ""
+        self.historial_rondas.append({
+            'numero': self.ronda_actual,
+            'hora': hora,
+            'puntos_ronda': cambio_ronda,
+            'puntos_acumulados': self.puntos,
+            'alertas': alertas,
+        })
 
     def _calcular_cambio_puntos(self, alerta, atendida):
         # Calcula cambio de puntos segun reglas

@@ -63,6 +63,19 @@ Version con Interfaz Grafica (Tkinter):
 python3 main_gui.py
 ```
 
+## Historial de Partidas (SQLite)
+
+Cada partida terminada se guarda en `datos/partidas.db` (tablas `partidas`,
+`rondas` y `estadisticas`). La logica esta en `modelos/persistencia.py`.
+
+```bash
+python3 main.py --jugador Ana           # Jugar y guardar como "Ana"
+python3 main.py --sin-guardar           # Jugar sin guardar
+python3 main.py --historial             # Ver historial
+python3 main.py --estadisticas          # Ver estadisticas por jugador
+python3 main.py --exportar historial.csv
+```
+
 ## Logs
 
 Ambas versiones registran la partida en `logs/juego.log` (inicio de ronda,

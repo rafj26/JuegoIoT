@@ -94,3 +94,42 @@ class Vista:
 
         print(resultado['mensaje'])
         print("=" * 60)
+
+    @staticmethod
+    def mostrar_mensaje(mensaje):
+        # Muestra un mensaje informativo
+        print(mensaje)
+
+    @staticmethod
+    def mostrar_historial(partidas):
+        # Muestra la lista de partidas guardadas
+        print("=" * 60)
+        print("HISTORIAL DE PARTIDAS")
+        print("=" * 60)
+        if not partidas:
+            print("No hay partidas guardadas")
+            return
+        print(f"{'#':>4}  {'Fecha':<19}  {'Jugador':<15} {'Puntos':>6}  Resultado")
+        print("-" * 60)
+        for p in partidas:
+            resultado = "VICTORIA" if p['victoria'] else "DERROTA"
+            print(f"{p['id']:>4}  {p['fecha']:<19}  {p['jugador'][:15]:<15} "
+                  f"{p['puntos_finales']:>6}  {resultado}")
+
+    @staticmethod
+    def mostrar_estadisticas(estadisticas):
+        # Muestra las estadisticas por jugador
+        print("=" * 60)
+        print("ESTADISTICAS")
+        print("=" * 60)
+        if not estadisticas:
+            print("No hay estadisticas todavia")
+            return
+        for e in estadisticas:
+            print(f"Jugador: {e['jugador']}")
+            print(f"  Partidas: {e['total_partidas']}  "
+                  f"Victorias: {e['victorias']} ({e['porcentaje_victorias']}%)  "
+                  f"Derrotas: {e['derrotas']}")
+            print(f"  Mejor puntuacion: {e['mejor_puntuacion']}  "
+                  f"Promedio: {e['promedio_puntos']}")
+            print("-" * 60)
