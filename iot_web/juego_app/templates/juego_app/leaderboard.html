@@ -1,0 +1,42 @@
+{% extends "juego_app/base.html" %}
+{% block titulo %}Clasificacion{% endblock %}
+{% block contenido %}
+<h1 class="h3 mb-3">Tabla de clasificacion</h1>
+<div class="row g-4">
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header fw-semibold">Jugadores</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead><tr><th>#</th><th>Jugador</th><th class="text-end">Partidas</th><th class="text-end">Victorias</th>
+            <th class="text-end">% Vict.</th><th class="text-end">Mejor</th></tr></thead>
+          <tbody>
+          {% for e in estadisticas %}
+            <tr {% if e.usuario == user %}class="table-info"{% endif %}>
+              <td>{{ forloop.counter }}</td><td>{{ e.usuario.nombre_visible }}</td>
+              <td class="text-end">{{ e.total_partidas }}</td><td class="text-end">{{ e.victorias }}</td>
+              <td class="text-end">{{ e.porcentaje_victorias }}</td><td class="text-end">{{ e.mejor_puntuacion }}</td></tr>
+          {% empty %}
+            <tr><td colspan="6" class="text-center text-body-secondary">Todavia no hay partidas terminadas.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header fw-semibold">Mejores partidas</div>
+      <ul class="list-group list-group-flush">
+        {% for p in mejores_partidas %}
+          <li class="list-group-item d-flex justify-content-between">
+            <span>{{ forloop.counter }}. {{ p.usuario.nombre_visible }} <small class="text-body-secondary">{{ p.fecha|date:"d/m/Y" }}</small></span>
+            <strong>{{ p.puntos }}</strong></li>
+        {% empty %}
+          <li class="list-group-item text-body-secondary">Sin partidas.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

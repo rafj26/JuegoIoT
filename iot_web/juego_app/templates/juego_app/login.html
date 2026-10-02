@@ -1,0 +1,19 @@
+{% extends "juego_app/base.html" %}
+{% block titulo %}Entrar{% endblock %}
+{% block contenido %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-4">
+    <div class="card">
+      <div class="card-body p-4">
+        <h1 class="h3 mb-3">Iniciar sesion</h1>
+        <form method="post" novalidate>
+          {% include "juego_app/_formulario.html" %}
+          <input type="hidden" name="next" value="{{ next }}">
+          <button class="btn btn-info w-100">Entrar</button>
+        </form>
+        <p class="mt-3 mb-0 small text-center">¿No tienes cuenta? <a href="{% url 'juego_app:registro' %}">Registrate</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

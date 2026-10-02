@@ -1,0 +1,14 @@
+{% load juego_extras %}
+{% grafica_puntos historial puntos_victoria total_rondas as g %}
+<svg viewBox="0 0 {{ g.ancho }} {{ g.alto }}" class="w-100 grafica" role="img"
+     aria-label="Grafica de puntos por ronda">
+  <line x1="{{ g.margen }}" y1="{{ g.y_base }}" x2="{{ g.x_fin }}" y2="{{ g.y_base }}" class="eje"/>
+  <line x1="{{ g.margen }}" y1="{{ g.y_objetivo }}" x2="{{ g.x_fin }}" y2="{{ g.y_objetivo }}" class="objetivo"/>
+  <text x="{{ g.margen|add:'-8' }}" y="{{ g.y_objetivo }}" class="etiqueta-objetivo" text-anchor="end" dominant-baseline="middle">{{ puntos_victoria }}</text>
+  <polyline points="{{ g.linea }}" class="serie"/>
+  {% for p in g.puntos %}
+    <circle cx="{{ p.x }}" cy="{{ p.y }}" r="5" class="{% if p.valor >= puntos_victoria %}punto-bien{% else %}punto-mal{% endif %}"/>
+    <text x="{{ p.x }}" y="{{ p.y|add:'-12' }}" text-anchor="middle" class="etiqueta">{{ p.valor }}</text>
+    <text x="{{ p.x }}" y="{{ g.y_base|add:'18' }}" text-anchor="middle" class="etiqueta-eje">{{ p.nombre }}</text>
+  {% endfor %}
+</svg>

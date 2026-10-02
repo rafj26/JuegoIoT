@@ -40,7 +40,8 @@ class JuegoSeguridadIoT:
         self.historial_rondas = []
         logger.info("Nueva partida creada con %d puntos", self.puntos)
 
-    def get_info_inicial(self):
+    @classmethod
+    def get_info_inicial(cls):
         """
         Retorna informacion inicial del juego.
 
@@ -49,19 +50,20 @@ class JuegoSeguridadIoT:
             y ``reglas`` (puntos por cada tipo de decision).
         """
         return {
-            'puntos_iniciales': self.PUNTOS_INICIALES,
-            'total_rondas': self.TOTAL_RONDAS,
-            'puntos_victoria': self.PUNTOS_VICTORIA,
-            'reglas': self._get_reglas()
+            'puntos_iniciales': cls.PUNTOS_INICIALES,
+            'total_rondas': cls.TOTAL_RONDAS,
+            'puntos_victoria': cls.PUNTOS_VICTORIA,
+            'reglas': cls._get_reglas()
         }
 
-    def _get_reglas(self):
+    @classmethod
+    def _get_reglas(cls):
         """Retorna las reglas del juego."""
         return {
-            'alerta_real_atendida': self.PUNTOS_ALERTA_REAL_ATENDIDA,
-            'alerta_falsa_atendida': self.PUNTOS_ALERTA_FALSA_ATENDIDA,
-            'alerta_real_no_atendida': self.PUNTOS_ALERTA_REAL_NO_ATENDIDA,
-            'alerta_falsa_no_atendida': self.PUNTOS_ALERTA_FALSA_NO_ATENDIDA
+            'alerta_real_atendida': cls.PUNTOS_ALERTA_REAL_ATENDIDA,
+            'alerta_falsa_atendida': cls.PUNTOS_ALERTA_FALSA_ATENDIDA,
+            'alerta_real_no_atendida': cls.PUNTOS_ALERTA_REAL_NO_ATENDIDA,
+            'alerta_falsa_no_atendida': cls.PUNTOS_ALERTA_FALSA_NO_ATENDIDA
         }
 
     def tiene_rondas_pendientes(self):
@@ -244,11 +246,20 @@ class JuegoSeguridadIoT:
         return {
             'puntos_finales': self.puntos,
             'victoria': victoria,
-            'mensaje': self._get_mensaje_final(victoria)
+            'mensaje': self.get_mensaje_final(victoria)
         }
 
-    def _get_mensaje_final(self, victoria):
-        """Retorna mensaje final segun resultado."""
+    @staticmethod
+    def get_mensaje_final(victoria):
+        """
+        Retorna mensaje final segun resultado.
+
+        Args:
+            victoria (bool): Si el jugador gano.
+
+        Returns:
+            str: Mensaje para la pantalla final.
+        """
         if victoria:
             return "Has mantenido la seguridad de la red"
         else:

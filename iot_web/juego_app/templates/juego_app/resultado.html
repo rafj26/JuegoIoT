@@ -1,0 +1,38 @@
+{% extends "juego_app/base.html" %}
+{% block titulo %}Resultado final{% endblock %}
+{% block contenido %}
+<div class="card mb-4 border-2 {% if partida.victoria %}border-success{% else %}border-danger{% endif %}">
+  <div class="card-body text-center py-5">
+    <div class="display-3 fw-bold {% if partida.victoria %}text-success{% else %}text-danger{% endif %}">
+      {% if partida.victoria %}¡VICTORIA!{% else %}DERROTA{% endif %}</div>
+    <p class="fs-4 mb-1">Puntuacion final: <strong>{{ partida.puntos }}</strong> puntos</p>
+    <p class="text-body-secondary">{{ mensaje }}</p>
+    <form method="post" action="{% url 'juego_app:iniciar' %}" class="d-inline">{% csrf_token %}
+      <button class="btn btn-info btn-lg">Jugar de nuevo</button>
+    </form>
+    <a class="btn btn-outline-secondary btn-lg" href="{% url 'juego_app:leaderboard' %}">Clasificacion</a>
+  </div>
+</div>
+
+<div class="card mb-4">
+  <div class="card-header fw-semibold">Puntuacion por ronda</div>
+  <div class="card-body">{% include "juego_app/_grafica.html" with total_rondas=rondas|length %}</div>
+</div>
+
+<div class="card">
+  <div class="card-header fw-semibold">Detalle de rondas</div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>Ronda</th><th>Hora</th><th class="text-end">Cambio</th><th class="text-end">Acumulado</th><th></th></tr></thead>
+      <tbody>
+      {% for r in rondas %}
+        <tr><td>{{ r.numero }}</td><td>{{ r.hora }}</td>
+          <td class="text-end {% if r.puntos > 0 %}text-success{% elif r.puntos < 0 %}text-danger{% endif %}">{{ r.puntos|stringformat:"+d" }}</td>
+          <td class="text-end">{{ r.puntos_acumulados }}</td>
+          <td class="text-end"><a href="{% url 'juego_app:ronda_resultado' partida.pk r.numero %}">Ver</a></td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

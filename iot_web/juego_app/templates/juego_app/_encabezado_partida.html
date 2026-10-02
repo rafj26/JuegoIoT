@@ -1,0 +1,16 @@
+<div class="card mb-3">
+  <div class="card-body">
+    <div class="row text-center g-2">
+      <div class="col"><div class="small text-body-secondary">RONDA</div>
+        <div class="fs-4 fw-bold">{{ numero }}/{{ total }}</div></div>
+      <div class="col"><div class="small text-body-secondary">PUNTOS</div>
+        <div class="fs-4 fw-bold {% if puntos >= objetivo %}text-success{% else %}text-danger{% endif %}">{{ puntos }}</div></div>
+      <div class="col"><div class="small text-body-secondary">HORA</div>
+        <div class="fs-4 fw-bold text-info">{{ hora }}</div></div>
+    </div>
+    <div class="progress mt-3" role="progressbar" aria-label="Progreso de rondas"
+         aria-valuenow="{{ completadas }}" aria-valuemin="0" aria-valuemax="{{ total }}" style="height: 8px">
+      <div class="progress-bar bg-info" style="width: {% widthratio completadas total 100 %}%"></div>
+    </div>
+  </div>
+</div>

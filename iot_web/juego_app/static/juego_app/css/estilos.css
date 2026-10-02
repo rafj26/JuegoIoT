@@ -1,0 +1,21 @@
+.alerta-card { cursor: pointer; border-width: 2px; transition: background-color .15s, border-color .15s, transform .1s; }
+.alerta-card:hover { transform: translateY(-1px); border-color: var(--bs-info-border-subtle); }
+.btn-check:focus-visible + .alerta-card { outline: 3px solid var(--bs-info); outline-offset: 2px; }
+.btn-check:checked + .alerta-card { background: var(--bs-info-bg-subtle); border-color: var(--bs-info); }
+.estado-alerta { background: var(--bs-secondary-bg); color: var(--bs-body-color); min-width: 6rem; }
+.btn-check:checked + .alerta-card .estado-alerta { background: var(--bs-info); color: #0f172a; }
+.btn-check:checked + .alerta-card .estado-alerta::after { content: ""; }
+.icono-dispositivo { display: inline-flex; align-items: center; justify-content: center; flex: none;
+  width: 2.5rem; height: 2.5rem; border-radius: 50%; color: #fff; font-weight: 700; font-size: 1.1rem; }
+.resultado { border-left-width: 6px; }
+.resultado-bien { border-left-color: var(--bs-success); background: var(--bs-success-bg-subtle); }
+.resultado-mal { border-left-color: var(--bs-danger); background: var(--bs-danger-bg-subtle); }
+.resultado-neutro { border-left-color: var(--bs-secondary); }
+.grafica .eje { stroke: var(--bs-border-color); }
+.grafica .objetivo { stroke: var(--bs-warning); stroke-dasharray: 6 4; }
+.grafica .serie { fill: none; stroke: var(--bs-info); stroke-width: 3; }
+.grafica .punto-bien { fill: var(--bs-success); }
+.grafica .punto-mal { fill: var(--bs-danger); }
+.grafica text { fill: var(--bs-body-color); font-size: 12px; }
+.grafica .etiqueta-eje { fill: var(--bs-secondary-color); }
+.grafica .etiqueta-objetivo { fill: var(--bs-warning); }

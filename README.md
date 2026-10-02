@@ -63,6 +63,36 @@ Version con Interfaz Grafica (Tkinter):
 python3 main_gui.py
 ```
 
+## Version Web (Django)
+
+La carpeta `iot_web/` contiene una version web con registro de usuarios,
+partidas guardadas en base de datos, tabla de clasificacion y perfil con
+estadisticas. Reutiliza la logica de `modelos/` mediante un adaptador
+(`juego_app/adaptador.py`), asi que las reglas son las mismas que en la
+version de escritorio.
+
+```bash
+pip install -r requirements.txt
+cd iot_web
+python manage.py migrate
+python manage.py createsuperuser   # Acceso a /admin/
+python manage.py runserver         # http://127.0.0.1:8000/
+python manage.py test              # Tests de la version web
+```
+
+| Ronda | Resultado final |
+|---|---|
+| ![Ronda web](docs/capturas/web_ronda.png) | ![Final web](docs/capturas/web_final.png) |
+
+Paginas: inicio, registro, login, partida (ronda y resultado de cada ronda),
+resultado final con grafica, clasificacion y perfil. Las alertas se generan
+en el servidor y nunca se envia al navegador si son reales hasta que el
+jugador decide.
+
+Variables de entorno para produccion: `DJANGO_SECRET_KEY`,
+`DJANGO_DEBUG=0`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
+`DJANGO_DB_PATH` y `DJANGO_TIME_ZONE`.
+
 ## Historial de Partidas (SQLite)
 
 Cada partida terminada se guarda en `datos/partidas.db` (tablas `partidas`,

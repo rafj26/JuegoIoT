@@ -1,0 +1,54 @@
+{% extends "juego_app/base.html" %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block contenido %}
+<h1 class="h3 mb-3">{{ user.nombre_visible }}</h1>
+<div class="row g-3 mb-4">
+  {% with e=estadistica %}
+  <div class="col-6 col-md-3"><div class="card text-center h-100"><div class="card-body">
+    <div class="small text-body-secondary">Partidas</div><div class="fs-3 fw-bold">{{ e.total_partidas|default:0 }}</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card text-center h-100"><div class="card-body">
+    <div class="small text-body-secondary">Victorias</div><div class="fs-3 fw-bold text-success">{{ e.victorias|default:0 }}</div>
+    <div class="small">{{ e.porcentaje_victorias|default:0 }}%</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card text-center h-100"><div class="card-body">
+    <div class="small text-body-secondary">Mejor puntuacion</div><div class="fs-3 fw-bold text-info">{{ e.mejor_puntuacion|default:"-" }}</div></div></div></div>
+  <div class="col-6 col-md-3"><div class="card text-center h-100"><div class="card-body">
+    <div class="small text-body-secondary">Promedio</div><div class="fs-3 fw-bold">{{ e.promedio_puntos|default:"-" }}</div></div></div></div>
+  {% endwith %}
+</div>
+
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card">
+      <div class="card-header fw-semibold">Historial de partidas</div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead><tr><th>#</th><th>Fecha</th><th class="text-end">Puntos</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+          {% for p in partidas %}
+            <tr><td>{{ p.pk }}</td><td>{{ p.fecha|date:"d/m/Y H:i" }}</td><td class="text-end">{{ p.puntos }}</td>
+              <td>{% if not p.terminada %}<span class="badge text-bg-warning">En curso</span>
+                  {% elif p.victoria %}<span class="badge text-bg-success">Victoria</span>
+                  {% else %}<span class="badge text-bg-danger">Derrota</span>{% endif %}</td>
+              <td class="text-end">{% if p.terminada %}<a href="{% url 'juego_app:resultado' p.pk %}">Ver</a>
+                  {% else %}<a href="{% url 'juego_app:ronda' p.pk %}">Continuar</a>{% endif %}</td></tr>
+          {% empty %}
+            <tr><td colspan="5" class="text-center text-body-secondary">Aun no has jugado.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card">
+      <div class="card-header fw-semibold">Datos de la cuenta</div>
+      <div class="card-body">
+        <form method="post" novalidate>
+          {% include "juego_app/_formulario.html" %}
+          <button class="btn btn-info">Guardar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

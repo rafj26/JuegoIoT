@@ -1,0 +1,64 @@
+{% extends "juego_app/base.html" %}
+{% block titulo %}Inicio{% endblock %}
+{% block contenido %}
+<div class="row g-4 align-items-center mb-4">
+  <div class="col-lg-7">
+    <h1 class="display-5 fw-bold">Protege la red IoT</h1>
+    <p class="lead text-body-secondary">
+      Eres el administrador de una red con 8 dispositivos. Durante {{ info.total_rondas }} rondas
+      recibiras alertas: decide cuales atender. Empiezas con {{ info.puntos_iniciales }} puntos y
+      necesitas {{ info.puntos_victoria }} o mas al final para ganar.
+    </p>
+    {% if user.is_authenticated %}
+      <div class="d-flex flex-wrap gap-2">
+        <form method="post" action="{% url 'juego_app:iniciar' %}">{% csrf_token %}
+          <button class="btn btn-info btn-lg">Nueva partida</button>
+        </form>
+        {% if partida_en_curso %}
+          <a class="btn btn-outline-info btn-lg" href="{% url 'juego_app:ronda' partida_en_curso.pk %}">
+            Continuar partida (ronda {{ partida_en_curso.ronda_actual }})
+          </a>
+        {% endif %}
+      </div>
+    {% else %}
+      <a class="btn btn-info btn-lg" href="{% url 'juego_app:registro' %}">Crear cuenta y jugar</a>
+      <a class="btn btn-outline-secondary btn-lg" href="{% url 'juego_app:login' %}">Ya tengo cuenta</a>
+    {% endif %}
+  </div>
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header fw-semibold">Reglas de puntuacion</div>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item d-flex justify-content-between">Alerta real atendida
+          <span class="badge text-bg-success">{{ info.reglas.alerta_real_atendida|stringformat:"+d" }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Alerta falsa atendida
+          <span class="badge text-bg-danger">{{ info.reglas.alerta_falsa_atendida|stringformat:"+d" }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Alerta real ignorada
+          <span class="badge text-bg-danger">{{ info.reglas.alerta_real_no_atendida|stringformat:"+d" }}</span></li>
+        <li class="list-group-item d-flex justify-content-between">Alerta falsa ignorada
+          <span class="badge text-bg-secondary">{{ info.reglas.alerta_falsa_no_atendida|stringformat:"+d" }}</span></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+{% if top %}
+<div class="card">
+  <div class="card-header d-flex justify-content-between">
+    <span class="fw-semibold">Mejores jugadores</span>
+    <a href="{% url 'juego_app:leaderboard' %}" class="small">Ver clasificacion completa</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead><tr><th>#</th><th>Jugador</th><th class="text-end">Victorias</th><th class="text-end">Mejor</th></tr></thead>
+      <tbody>
+      {% for e in top %}
+        <tr><td>{{ forloop.counter }}</td><td>{{ e.usuario.nombre_visible }}</td>
+            <td class="text-end">{{ e.victorias }}</td><td class="text-end">{{ e.mejor_puntuacion }}</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
