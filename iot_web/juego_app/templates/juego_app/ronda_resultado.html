@@ -11,7 +11,7 @@
   {% for a in ronda.alertas_json %}
     <div class="card resultado {% if a.cambio_puntos > 0 %}resultado-bien{% elif a.cambio_puntos < 0 %}resultado-mal{% else %}resultado-neutro{% endif %}">
       <div class="card-body d-flex flex-wrap flex-md-nowrap gap-3 align-items-center py-2">
-        <strong>[{{ a.indice }}] {% if a.atendida %}ATENDIDA{% else %}IGNORADA{% endif %} · {% if a.es_real %}REAL{% else %}FALSA{% endif %}</strong>
+        <strong class="flex-shrink-0">[{{ a.indice }}] {% if a.atendida %}ATENDIDA{% else %}IGNORADA{% endif %} · {% if a.es_real %}REAL{% else %}FALSA{% endif %}</strong>
         <span class="flex-grow-1">{{ a.tipo }} ({{ a.ubicacion }}): {{ a.descripcion }}</span>
         <strong class="ms-auto text-nowrap">{{ a.cambio_puntos|stringformat:"+d" }} pts</strong>
       </div>
