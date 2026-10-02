@@ -93,6 +93,31 @@ Variables de entorno para produccion: `DJANGO_SECRET_KEY`,
 `DJANGO_DEBUG=0`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_CSRF_TRUSTED_ORIGINS`,
 `DJANGO_DB_PATH` y `DJANGO_TIME_ZONE`.
 
+### API REST
+
+La API (Django REST Framework) permite jugar desde apps moviles. La
+documentacion interactiva esta en `/api/docs/` (Swagger) y `/api/redoc/`;
+el esquema OpenAPI en `/api/schema/`.
+
+| Metodo | Ruta | Descripcion |
+|---|---|---|
+| POST | `/api/token/` | Obtener token (`username`, `password`) |
+| GET, POST | `/api/partidas/` | Listar mis partidas / crear una nueva |
+| GET, DELETE | `/api/partidas/{id}/` | Ver partida con rondas / eliminar si esta en curso |
+| GET | `/api/partidas/{id}/ronda/` | Alertas de la ronda en curso |
+| POST | `/api/partidas/{id}/decidir/` | Decidir: `{"alertas": [1, 3]}` |
+| GET | `/api/rondas/?partida={id}` | Rondas jugadas |
+| GET | `/api/leaderboard/` | Clasificacion (publica) |
+| GET | `/api/estadisticas/` | Mis estadisticas |
+
+```bash
+TOKEN=$(curl -s -X POST localhost:8000/api/token/ -d username=ana -d password=... | jq -r .token)
+curl -H "Authorization: Token $TOKEN" -X POST localhost:8000/api/partidas/
+curl -H "Authorization: Token $TOKEN" localhost:8000/api/partidas/1/ronda/
+curl -H "Authorization: Token $TOKEN" -H "Content-Type: application/json" \
+     -d '{"alertas": [1, 3]}' localhost:8000/api/partidas/1/decidir/
+```
+
 ## Historial de Partidas (SQLite)
 
 Cada partida terminada se guarda en `datos/partidas.db` (tablas `partidas`,
