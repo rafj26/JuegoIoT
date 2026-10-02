@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Sintaxis y lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verificar sintaxis Python
+        run: python -m compileall -q -x 'docs/_build' .
+      - name: Lint con flake8
+        run: |
+          pip install flake8
+          flake8 --count --show-source --statistics
+
+  tests:
+    name: Tests (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Instalar dependencias
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q xvfb
+          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Ejecutar pytest con cobertura (incluye GUI con Xvfb)
+        run: xvfb-run -a pytest --cov=modelos --cov=controladores --cov=vistas --cov=utilidades
+             --cov-report=term-missing --cov-report=xml
+      - name: Reportar coverage en el resumen
+        if: matrix.python-version == '3.12'
+        run: |
+          echo '### Cobertura' >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          coverage report >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: Guardar reporte de cobertura
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.xml
+
+  django:
+    name: Tests de la version web
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: iot_web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Instalar dependencias
+        run: pip install -r ../requirements.txt
+      - name: Verificar configuracion y migraciones
+        run: |
+          python manage.py check
+          python manage.py makemigrations --check --dry-run
+      - name: Validar esquema OpenAPI
+        run: python manage.py spectacular --validate --fail-on-warn --file /dev/null
+      - name: Ejecutar tests
+        run: python manage.py test
+
+  docs:
+    name: Documentacion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Generar documentacion con Sphinx
+        run: |
+          pip install -r requirements-docs.txt
+          sphinx-build -W --keep-going -b html docs docs/_build/html

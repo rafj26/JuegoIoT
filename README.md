@@ -1,5 +1,7 @@
 # Sistema de Seguridad IoT
 
+[![CI](https://github.com/rafj26/JuegoIoT/actions/workflows/ci.yml/badge.svg)](https://github.com/rafj26/JuegoIoT/actions/workflows/ci.yml)
+
 Videojuego educativo desarrollado en Python que simula la gestión de alertas en una red de dispositivos IoT. El jugador asume el rol de administrador de sistemas y debe analizar alertas para determinar cuáles son reales y cuáles falsas, manteniendo la seguridad de la red.
 
 ## Descripcion General
@@ -181,6 +183,17 @@ xvfb-run -a pytest tests/test_gui.py   # Tests de la GUI en Linux sin pantalla
 Los tests estan en `tests/`: `test_juego.py`, `test_red_iot.py`,
 `test_dispositivos.py`, `test_integracion.py`, `test_persistencia.py`,
 `test_utilidades.py` y `test_gui.py` (se omite si no hay Tkinter o pantalla).
+
+## Integracion Continua
+
+`.github/workflows/ci.yml` se ejecuta en cada push a `main`/`develop` y en
+cada Pull Request:
+
+- Verificacion de sintaxis (`compileall`) y lint con flake8 (configurado en `.flake8`).
+- Tests con pytest en Python 3.10, 3.11 y 3.12 (la GUI se prueba con Xvfb),
+  con reporte de cobertura en el resumen del job y como artefacto.
+- Tests de la version web, migraciones pendientes y validacion del esquema OpenAPI.
+- Generacion de la documentacion con Sphinx (falla ante cualquier warning).
 
 ## Documentacion
 
